@@ -47,7 +47,7 @@ const createUser = async function(req, res){
 
         let {fname, lname, email, phone, password, address} = reqBody
         // let addressToString = JSON.stringify(address)
-        let addressParse = JSON.parse(address)
+       
 
 
         if(!validator.isValid(fname)){
@@ -78,9 +78,13 @@ const createUser = async function(req, res){
             return res.status(400).send({status: false, message: "password Should contain atleast one upperCase, lowerCase, special character and also the length of password should atleast 8 and atmost 15 character. "})
         }
 
-        if(!validator.isValidObjectType(addressParse)){
+        if(!validator.isValidObjectType(address))
+        {console.log(address)
             return res.status(400).send({status: false, message: "address is missing."})
+            
         }
+        let addressParse = JSON.parse(address)
+
 
         // if Email and phone is already exist in DB then show msg: you have to use diiferent email and phone no.
         const isSameEmail = await userModel.findOne({email: email})
