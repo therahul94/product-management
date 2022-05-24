@@ -1,6 +1,7 @@
 const userModel = require('../models/userModel')
 const validator = require('../validators/validation')
 const bcrypt = require('bcrypt')
+const jwt=require('jsonwebtoken')
 // const awsModule = require('../aws/upload')
 
 const aws = require('aws-sdk')
@@ -115,6 +116,55 @@ const createUser = async function(req, res){
         return res.status(500).send({status: false, message: error.message})
     }
 
-}    
+}   
 
-module.exports = {createUser}
+
+const login=async function(req,res){
+    try {
+        let data=req.body
+
+        if(!validator.isRequestBodyEmpty(data)){
+            return res.status(400).send({status:false,msg:"Please provide details"})
+        }
+
+        if(!data.email){
+            return res.status(400).send({status:false, msg:"Email id is requried"})
+        }
+
+        if(!data.password){
+            return res.status(400).send({status:false, msg:"Password is requried"})
+        }
+
+        if(!validator.isValid(email)){
+            return res.status(400).send({status:false, msg:"Enter valid email id"})
+        }
+
+        if(!validator.isValid(password)){
+            return res.status(400).send({status:false, msg:"Enter a valid password"})
+        }
+
+        const checkValidUser= await userModel.findOne({email:data.email})
+        if(!checkValidUser){
+            return res.status(400).send({status:false,msg:"Email Id is not correct"})
+        }
+
+        let checkPassword = await bcrypt.compare(
+            data.password,
+            checkValidUser.password
+          );
+      
+          if (!checkPassword) {
+            return res.status(400).send({ status: false, message: "Password is not correct" });
+          }
+
+          let token = jwt.sign({ userId: checkValidUser._id }, "Product-Management", {
+            expiresIn: "1d",
+          });
+          res.status(200).send({status:true,msg:"User login successfull",data:token})
+      
+    } catch (err) {
+        res.status(500).send({msg:err.message})
+    }
+}
+
+module.exports = {createUser,login}
