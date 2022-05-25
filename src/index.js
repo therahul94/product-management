@@ -20,3 +20,6 @@ app.use("/",route)
 app.listen(process.env.PORT || 3000,function(){
     console.log('Express app running on the port ' +(process.env.PORT || 3000))
 })
+
+//.env is the file which doesnot show to collabarator and only shows to the generator of the code and in that 
+//.env file there is mentioned PORT there so the program is either running on that port or 3000 port...

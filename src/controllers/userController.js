@@ -5,6 +5,7 @@ const jwt=require('jsonwebtoken')
 // const awsModule = require('../aws/upload')
 
 const aws = require('aws-sdk')
+const { default: mongoose } = require('mongoose')
 
 aws.config.update({
     accessKeyId: "AKIAY3L35MCRVFM24Q7U",
@@ -86,6 +87,30 @@ const createUser = async function(req, res){
         }
         let addressParse = JSON.parse(address)
 
+        let {shipping, billing} = addressParse
+        if(shipping){
+            if(!shipping.street) return res.status(400).send({status: false, message: "shipping street is missing."})
+            // if(!(.test(shipping.street))) return res.status(400).send({Status: false , message:"Please enter the valid shipping street address"}) 
+
+            if(!shipping.city) return res.status(400).send({status: false, message: "shipping city is missing."})
+            if(!(/^[a-zA-Z]+$/.test(shipping.city))) return res.status(400).send({Status: false , message:"Please enter the valid shipping city address"}) 
+
+            if(!shipping.pincode) return res.status(400).send({status: false, message: "shipping pincode is missing."})
+            if(!(/^[1-9][0-9]{5}$/.test(shipping.pincode))) return res.status(400).send({Status: false , message:"Please enter the valid shipping pincode "}) 
+        }
+        else return res.status(400).send({status: false, message: "Shipping field is not given"})
+
+        if(billing){
+            if(!billing.street) return res.status(400).send({status: false, message: "billing street is missing."})
+            // if(!(.test(shipping.street))) return res.status(400).send({Status: false , message:"Please enter the valid billing street address"}) 
+
+            if(!billing.city) return res.status(400).send({status: false, message: "billing city is missing."})
+            if(!(/^[a-zA-Z]+$/.test(shipping.city))) return res.status(400).send({Status: false , message:"Please enter the valid billing city address"}) 
+
+            if(!billing.pincode) return res.status(400).send({status: false, message: "billing pincode is missing."})
+            if(!(/^[1-9][0-9]{5}$/.test(shipping.pincode))) return res.status(400).send({Status: false , message:"Please enter the valid billing pincode "}) 
+        }
+        else return res.status(400).send({status: false, message: "billing field is not given"})
 
         // if Email and phone is already exist in DB then show msg: you have to use diiferent email and phone no.
         const isSameEmail = await userModel.findOne({email: email})
@@ -127,25 +152,25 @@ const login=async function(req,res){
             return res.status(400).send({status:false,msg:"Please provide details"})
         }
 
-        if(!data.email){
-            return res.status(400).send({status:false, msg:"Email id is requried"})
-        }
+        // if(!data.email){
+        //     return res.status(400).send({status:false, msg:"Email id is requried"})
+        // }
 
-        if(!data.password){
-            return res.status(400).send({status:false, msg:"Password is requried"})
-        }
+        // if(!data.password){
+        //     return res.status(400).send({status:false, msg:"Password is requried"})
+        // }
 
-        if(!validator.isValid(email)){
+        if(!validator.isValid(data.email)){
             return res.status(400).send({status:false, msg:"Enter valid email id"})
         }
 
-        if(!validator.isValid(password)){
+        if(!validator.isValid(data.password)){
             return res.status(400).send({status:false, msg:"Enter a valid password"})
         }
 
         const checkValidUser= await userModel.findOne({email:data.email})
         if(!checkValidUser){
-            return res.status(400).send({status:false,msg:"Email Id is not correct"})
+            return res.status(400).send({status:false,msg:"Email Id is not correct "})
         }
 
         let checkPassword = await bcrypt.compare(
@@ -160,11 +185,31 @@ const login=async function(req,res){
           let token = jwt.sign({ userId: checkValidUser._id }, "Product-Management", {
             expiresIn: "1d",
           });
-          res.status(200).send({status:true,msg:"User login successfull",data:token})
+
+          const userId= await userModel.findOne({email:data.email}).select({_id:1})
+          res.status(200).send({status:true,msg:"User login successfull",data:{userId: userId._id, token: token}})
       
     } catch (err) {
         res.status(500).send({msg:err.message})
     }
 }
 
-module.exports = {createUser,login}
+
+const getUserDetails = async function(req, res){
+
+    const userId = req.params.userId
+    if(!validator.isValid(userId)){
+        return res.status(400).send({status: false, message: "userId is not given"})
+    }
+    if(!mongoose.isValidObjectId(userId)){
+        return res.status(400).send({status: false, message: "userId is Invalid"})
+    }
+
+    const findUserId = await userModel.findById(userId)
+    if(!findUserId) return res.status(403).send({status: false, message: "NO DATA FOUND"})
+
+    return res.status(200).send({status: true, message: "user profile details", data: findUserId})
+
+}
+
+module.exports = {createUser, login, getUserDetails}
