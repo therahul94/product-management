@@ -6,8 +6,8 @@ const jwt = require("jsonwebtoken");
 
 const aws = require("aws-sdk");
 const { default: mongoose } = require("mongoose");
-const req = require("express/lib/request");
-const { RDS } = require("aws-sdk");
+// const req = require("express/lib/request");
+// const { RDS } = require("aws-sdk");
 
 aws.config.update({
   accessKeyId: "AKIAY3L35MCRVFM24Q7U",
@@ -330,6 +330,8 @@ const getUserDetails = async function (req, res) {
     .send({ status: true, message: "user profile details", data: findUserId });
 };
 
+
+
 const updatedUserProfile = async (req, res) => {
   try {
     let data = req.body;
@@ -358,7 +360,7 @@ const updatedUserProfile = async (req, res) => {
         .send({ status: false, msg: "Enter a valid details" });
     }
 
-    const { fname, lname, email, password, profileImage, phone, address } =data;
+    const { fname, lname, email, password, phone, address } =data;
     let updateData = {};
 
     if (fname) {
@@ -367,7 +369,7 @@ const updatedUserProfile = async (req, res) => {
           .status(400)
           .send({ status: false, message: "fname is missing." });
       }
-      if (validator.validString(fname)) {
+      if (!validator.validString(fname)) {
         return res
           .status(400)
           .send({ status: false, msg: "fname should be string" });
@@ -441,40 +443,33 @@ const updatedUserProfile = async (req, res) => {
 
       data.password = await bcrypt.hash(data.password, 10);
     }
-console.log(updateData)
-    // if(address){
-    //     if(!validator.isValidObjectType(address)){
-    //         return res.status(400).send({status:false,msg:"address is required"})
-    //     }
-    // }
-    // let updateAddress=JSON.parse(data.address)
 
-    // let {shipping, billing} = updateAddress
 
-    // if(shipping){
-    //     if(!validator.validString(shipping)){
-    //         return res.status(400).send({status:false,msg:"Shipping address should be in object and must contain street, city and pincode"})
-    //     }
-    //     if(!validator.validString(shipping.street))
-    //     return res.status(400).send({status:false,msg:"shipping street is missing."})
+    if (data.profileImage) {
+        if (typeof data.profileImage === "string") {
+            return res.status(400).send({ Status: false, message: "Please upload the image" })
+        }
+    }
+    if (files && files.length > 0) {
 
-    //     // if(!validator.validString())
-
-    // }
+        let uploadedFileURL = await uploadFile(files[0])
+        data.profileImage = uploadedFileURL
+        updateData.profileImage = data.profileImage
+    }
+    
+    
     if (address) {
-    //   console.log(1)
+    
       data.address = JSON.parse(data.address);
-      console.log(typeof data.address);
+
       if (typeof data.address != "object") {
         return res
           .status(400)
           .send({ status: false, message: "Address must be in object" });
       }
       let { shipping, billing } = data.address;
-
-      // console.log(3)
-      // console.log(shipping)
-      // console.log(typeof shipping)
+      updateData.address = data.address
+     
       if (shipping) {
         //   console.log("123")
         if (typeof shipping != "object") {
@@ -491,7 +486,6 @@ console.log(updateData)
 
         
         let { street, city, pincode } = shipping;
-// console.log(street)
 
         if (street) {
           if (!validator.isValid(street)) {
@@ -500,9 +494,11 @@ console.log(updateData)
               .send({ status: false, message: "shipping street is required" });
           }
 
-          updateData.address.shipping.street = street;
-          console.log(street)
-          console.log(updateData)
+          updateData.address.shipping.street = shipping.street;
+        
+        //   data.address.shipping.street = street;
+        //   updateData.address = data.address
+        
 
         }
 
@@ -521,9 +517,12 @@ console.log(updateData)
                 message: "city field have to fill by alpha characters",
               });
           }
-          console.log("hello123")
-
           updateData.address.shipping.city = shipping.city;
+        //   data.address.shipping.city = city;
+        //   updateData.address = data.address
+        //   updateData.address.shipping.city = shipping.city;
+        //   console.log("aaaa:",updateData.address.shipping.city)
+
         }
 
         if (pincode) {

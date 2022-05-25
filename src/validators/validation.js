@@ -15,7 +15,7 @@ const isRequestBodyEmpty = function (value) {
 };
 
 const validString = (String) => {
-  if (/\d/.test(String)) {
+  if (/^[a-zA-Z]+$/.test(String)) {
     return true;
   } else {
     return false;
