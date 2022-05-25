@@ -145,7 +145,7 @@ const login=async function(req,res){
 
         const checkValidUser= await userModel.findOne({email:data.email})
         if(!checkValidUser){
-            return res.status(400).send({status:false,msg:"Email Id is not correct"})
+            return res.status(400).send({status:false,msg:"User does not exist"})
         }
 
         let checkPassword = await bcrypt.compare(
@@ -166,5 +166,8 @@ const login=async function(req,res){
         res.status(500).send({msg:err.message})
     }
 }
+
+// PUT /user/:userId/profile
+
 
 module.exports = {createUser,login}
