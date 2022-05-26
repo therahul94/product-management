@@ -1,8 +1,7 @@
 const userModel = require("../models/userModel");
 const validator = require("../validators/validation");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-// const awsModule = require('../aws/upload')
+const jwt = require("jsonwebtoken")
 
 const aws = require("aws-sdk");
 const { default: mongoose } = require("mongoose");
@@ -90,6 +89,7 @@ const createUser = async function (req, res) {
       return res
         .status(400)
         .send({ status: false, message: "password is missing." });
+
     }
     if (!validator.validPwd(password)) {
       console.log(password);
@@ -101,12 +101,18 @@ const createUser = async function (req, res) {
             "password Should contain atleast one upperCase, lowerCase, special character and also the length of password should atleast 8 and atmost 15 character. ",
         });
     }
+    if (!validator.isValid(address)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "Address is missing" });
+    }
+
 
     if (!validator.isValidObjectType(address)) {
       console.log(address);
       return res
         .status(400)
-        .send({ status: false, message: "address is missing." });
+        .send({ status: false, message: "Please, Enter valid Address" });
     }
     if (!validator.validString(fname)) {
       return res
@@ -121,6 +127,7 @@ const createUser = async function (req, res) {
 
     let addressParse = JSON.parse(address);
     let { shipping, billing } = addressParse;
+
     if (shipping) {
       if (!shipping.street)
         return res
@@ -144,7 +151,7 @@ const createUser = async function (req, res) {
         return res
           .status(400)
           .send({ status: false, message: "shipping pincode is missing." });
-      if (!/^[1-9][0-9]{5}$/.test(shipping.pincode))
+      if (!/^[1-9][0-9]{5}$/.test(shipping.pincode))// ([1-9]{1}[0-9]{5}|[1-9]{1}[0-9]{3}\\s[0-9]{3})
         return res
           .status(400)
           .send({
