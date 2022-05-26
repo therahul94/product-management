@@ -42,7 +42,7 @@ const productCreation = async function(req, res) {
 
         //uploading product image to AWS.
         if (files) {
-            if (validator.isRequestBodyEmpty(files)) {
+            if (!validator.isRequestBodyEmpty(files)) {
                 if (!(files && files.length > 0)) {
                     return res.status(400).send({ status: false, message: "Please provide product image" })
                 }
@@ -67,7 +67,9 @@ const productCreation = async function(req, res) {
         }
 
         if (!validator.isValid(currencyFormat)) {
-            currencyFormat = currencySymbol('INR')
+            return res.status(400).send({ status: false, message: "currency Format not availeble" })
+            // currencyFormat = currencySymbol('INR')
+
         }
         currencyFormat = currencySymbol('INR') //used currency symbol package to store INR symbol.
 
@@ -94,7 +96,18 @@ const productCreation = async function(req, res) {
         //     }
         // }
 
+// config.sdk(files)
         productImage = await config.uploadFile(files[0]);
+        // let files= req.productImage
+        // if(files && files.length>0){
+        //     //upload to s3 and get the uploaded link
+        //     // res.send the link back to frontend/postman
+        //     let uploadedFileURL= await uploadFile( files[0] )
+        //     res.status(201).send({msg: "file uploaded succesfully", data: uploadedFileURL})
+        // }
+        // else{
+        //     res.status(400).send({ msg: "No file found" })
+        // }
 
         //object destructuring for response body.
         const newProductData = {
@@ -110,10 +123,16 @@ const productCreation = async function(req, res) {
             productImage: productImage
         }
 
+        console.log(availableSizes.length)
         //validating sizes to take multiple sizes at a single attempt.
         if (availableSizes) {
+            
+            if(availableSizes.length==0){
+                return res.status(400).send({ status: false, message: "AvailableSizes should be required" })
+            }
             let sizesArray = availableSizes.split(",").map(x => x.trim())
 
+            
             for (let i = 0; i < sizesArray.length; i++) {
                 if (!(["S", "XS", "M", "X", "L", "XXL", "XL"].includes(sizesArray[i]))) {
                     return res.status(400).send({ status: false, message: "AvailableSizes should be among ['S','XS','M','X','L','XXL','XL']" })
@@ -227,16 +246,16 @@ const getAllProducts = async function(req, res) {
 
         const products = await productModel.find(filterQuery)
 
-        console.log(filterQuery)
-        if(filterQuery['price']['$lte']  && filterQuery['price']['$gte'] ){
+        // console.log(filterQuery)
+        // if(filterQuery['price']['$lte']  && filterQuery['price']['$gte'] ){
 
-            console.log("hello")
-            finalProduct=products.filter((products)=>{
+        //     console.log("hello")
+        //     finalProduct=products.filter((products)=>{
 
-            return products.price>=filterQuery['price']['$gte'] && products.price<=filterQuery['price']['$lte']
-            })
-            return res.status(200).send({ status: true, message: 'Product list', data3: finalProduct })
-        }
+        //     return products.price>=filterQuery['price']['$gte'] && products.price<=filterQuery['price']['$lte']
+        //     })
+        //     return res.status(200).send({ status: true, message: 'Product list', data3: finalProduct })
+        // }
         //verifying is it an array and having some data in that array.
         if (Array.isArray(products) && products.length === 0) {
             return res.status(404).send({ productStatus: false, message: 'No Product found' })

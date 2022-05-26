@@ -2,11 +2,11 @@ const userModel = require("../models/userModel");
 const validator = require("../validators/validation");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
+const config= require("../utils/awsConfig")
 
 const aws = require("aws-sdk");
 const { default: mongoose } = require("mongoose");
-// const req = require("express/lib/request");
-// const { RDS } = require("aws-sdk");
+
 
 aws.config.update({
   accessKeyId: "AKIAY3L35MCRVFM24Q7U",
@@ -42,47 +42,35 @@ const createUser = async function (req, res) {
     const reqBody = req.body;
     const files = req.files;
 
+    //Check valid request body
     if (!validator.isRequestBodyEmpty(reqBody)) {
-      return res
-        .status(400)
-        .send({ status: false, message: "Please provide the details" });
+      return res.status(400).send({ status: false, message: "Please provide the details" });
     }
 
     let { fname, lname, email, phone, password, address } = reqBody;
-    // let addressToString = JSON.stringify(address)
-
+    
+//validate first name
     if (!validator.isValid(fname)) {
-      return res
-        .status(400)
-        .send({ status: false, message: "fname is missing." });
+      return res.status(400).send({ status: false, message: "fname is missing." });
     }
 
     if (!validator.isValid(lname)) {
-      return res
-        .status(400)
-        .send({ status: false, message: "lname is missing." });
+      return res.status(400).send({ status: false, message: "lname is missing." });
     }
 
     if (!validator.isValid(email)) {
-      return res
-        .status(400)
-        .send({ status: false, message: "email is missing." });
+      return res.status(400).send({ status: false, message: "email is missing." });
     }
+
     if (validator.validEmail(email)) {
-      return res
-        .status(400)
-        .send({ status: false, message: "EMAIL is invalid" });
+      return res.status(400).send({ status: false, message: "EMAIL is invalid" });
     }
 
     if (!validator.isValid(phone)) {
-      return res
-        .status(400)
-        .send({ status: false, message: "phone is missing." });
+      return res.status(400).send({ status: false, message: "phone is missing." });
     }
     if (!validator.validMobileNum(phone)) {
-      return res
-        .status(400)
-        .send({ status: false, message: "Phone no. is invalid" });
+      return res.status(400).send({ status: false, message: "Phone no. is invalid" });
     }
 
     if (!validator.isValid(password)) {
@@ -93,26 +81,17 @@ const createUser = async function (req, res) {
     }
     if (!validator.validPwd(password)) {
       console.log(password);
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message:
-            "password Should contain atleast one upperCase, lowerCase, special character and also the length of password should atleast 8 and atmost 15 character. ",
+      return res.status(400).send({status: false,message:"password Should contain atleast one upperCase, lowerCase, special character and also the length of password should atleast 8 and atmost 15 character. ",
         });
     }
     if (!validator.isValid(address)) {
-      return res
-        .status(400)
-        .send({ status: false, message: "Address is missing" });
+      return res.status(400).send({ status: false, message: "Address is missing" });
     }
 
 
     if (!validator.isValidObjectType(address)) {
       console.log(address);
-      return res
-        .status(400)
-        .send({ status: false, message: "Please, Enter valid Address" });
+      return res.status(400).send({ status: false, message: "Please, Enter valid Address" });
     }
     if (!validator.validString(fname)) {
       return res
