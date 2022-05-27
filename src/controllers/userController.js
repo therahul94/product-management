@@ -545,7 +545,7 @@ const updatedUserProfile = async (req, res) => {
         if (Object.keys(billing).length == 0) {
           return res
             .status(400)
-            .send({ status: false, message: "No keys are given in shipping" });
+            .send({ status: false, message: "No keys are given in billing" });
         }
 
         

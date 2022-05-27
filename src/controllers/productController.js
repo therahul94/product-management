@@ -73,6 +73,9 @@ const productCreation = async function(req, res) {
         }
         currencyFormat = currencySymbol('INR') //used currency symbol package to store INR symbol.
 
+        if(!validator.isValidSize(availableSizes) && !validator.validString(availableSizes))  
+        return res.status(400).send({ status: false, message: "It's required field choose at least one of these ['S','XS','M','X','L','XXL','XL']" });
+
         // if (style) {
         //     if (!validator.validString(style)) {
         //         return res.status(400).send({ status: false, message: "style is required" })
@@ -130,25 +133,15 @@ const productCreation = async function(req, res) {
             if(availableSizes.length==0){
                 return res.status(400).send({ status: false, message: "AvailableSizes should be required" })
             }
-            let sizesArray = availableSizes.split(",").map(x => x.trim())
-
-            
-            for (let i = 0; i < sizesArray.length; i++) {
-                if (!(["S", "XS", "M", "X", "L", "XXL", "XL"].includes(sizesArray[i]))) {
-                    return res.status(400).send({ status: false, message: "AvailableSizes should be among ['S','XS','M','X','L','XXL','XL']" })
-                }
-            }
-
-            //using array.isArray function to check the value is array or not.
-            if (Array.isArray(sizesArray)) {
-                newProductData['availableSizes'] = [...new Set(sizesArray)]
-            }
+           
         }
+       
+
         const saveProductDetails = await productModel.create(newProductData)
-        return res.status(201).send({ status: true, message: "Successfully saved product details", data: saveProductDetails })
+         res.status(201).send({ status: true, message: "Successfully saved product details", data: saveProductDetails })
 
     } catch (err) {
-        return res.status(500).send({status: false,message: "Error is : " + err})
+         res.status(500).send({status: false,message:err.message})
     }
 }
 

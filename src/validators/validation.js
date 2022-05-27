@@ -63,6 +63,9 @@ const isValidObjectType = (value) => {
     return true;
   }
 };
+const isValidSize = (sizes) => {
+  return ["S", "XS","M","X", "L","XXL", "XL"].includes(sizes);
+}
 
 module.exports = {
   isValid,
@@ -73,4 +76,5 @@ module.exports = {
   validPwd,
   validPinCode,
   isValidObjectType,
+  isValidSize
 };
