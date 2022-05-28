@@ -61,7 +61,7 @@ const createUser = async function (req, res) {
     if (!validator.isValid(email)) {
       return res.status(400).send({ status: false, message: "email is missing." });
     }
-
+    email = email.toLowerCase()
     if (validator.validEmail(email)) {
       return res.status(400).send({ status: false, message: "EMAIL is invalid" });
     }
@@ -382,6 +382,7 @@ const updatedUserProfile = async (req, res) => {
           .status(400)
           .send({ status: false, msg: "Enter a valid email id" });
       }
+      email = email.toLowerCase()
       if (validator.validEmail(email)) {
         return res
           .status(400)

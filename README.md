@@ -482,3 +482,9 @@ Refer below sample
 
 email: xhyz@gmail.com
 password: Asbkjf23@%4
+
+doubt:
+line 185-186:      
+What is this?
+  filterQuery['title']['$regex'] = name
+  filterQuery['title']['$options'] = 'i'

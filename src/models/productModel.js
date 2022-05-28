@@ -5,11 +5,13 @@ const productSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        // trim: true
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     price: {
         type: Number,
@@ -17,11 +19,13 @@ const productSchema = new mongoose.Schema({
     },
     currencyId: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     currencyFormat: {
         type: String,
         required: true,
+        trim: true
     },
     isFreeShipping: {
         type: Boolean,
@@ -29,9 +33,9 @@ const productSchema = new mongoose.Schema({
     },
     productImage: {
         type: String,
-        required: true
+        required: true,
     },
-    style: { type: String },
+    style: { type: String, trim: true },
     availableSizes: {
         type: [String],
         required: true,
