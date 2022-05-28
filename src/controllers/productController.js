@@ -3,6 +3,7 @@ const validator = require('../validators/validation')
 const config = require('../utils/awsConfig')
 const productModel = require('../models/productModel')
 const currencySymbol = require("currency-symbol-map")
+const { default: mongoose } = require('mongoose')
 
 //creating product by validating all details.
 const productCreation = async function(req, res) {
@@ -127,13 +128,27 @@ const productCreation = async function(req, res) {
         }
 
         console.log(availableSizes.length)
-        //validating sizes to take multiple sizes at a single attempt.
+//validating sizes to take multiple sizes at a single attempt.
         if (availableSizes) {
             
             if(availableSizes.length==0){
                 return res.status(400).send({ status: false, message: "AvailableSizes should be required" })
+            }        
+            let sizesArray = availableSizes.split(",").map(x => x.trim())
+            // let sizesArray = JSON.parse(sizesArray)
+            
+
+            
+            for (let i = 0; i < sizesArray.length; i++) {
+                if (!(["S", "XS", "M", "X", "L", "XXL", "XL"].includes(sizesArray[i]))) {
+                    return res.status(400).send({ status: false, message: "AvailableSizes should be among ['S','XS','M','X','L','XXL','XL']" })
+                }
             }
-           
+
+            //using array.isArray function to check the value is array or not.
+            if (Array.isArray(sizesArray)) {
+                newProductData['availableSizes'] = [...new Set(sizesArray)]
+            }
         }
        
 
@@ -175,7 +190,7 @@ const getAllProducts = async function(req, res) {
                 filterQuery['title'] = name
                 console.log("hii")
                 // filterQuery['title']['$regex'] = name
-                // filterQuery['title']['$options'] = 'i'
+                // filterQuery['title']['$regex: $options'] = 'i'
 
             }
 
@@ -294,7 +309,7 @@ const updateProduct = async function(req, res) {
         const productId = params.productId
 
         // Validation stats
-        if (!validator.isValidObjectId(productId)) {
+        if (!mongoose.isValidObjectId(productId)) {
             return res.status(400).send({ status: false, message: `${productId} is not a valid product id` })
         }
 
@@ -304,7 +319,7 @@ const updateProduct = async function(req, res) {
             return res.status(404).send({ status: false, message: `product not found` })
         }
 
-        if (!(validator.isValidRequestBody(requestBody) || req.files)) {
+        if (!(validator.isRequestBodyEmpty(requestBody) || req.files)) {
             return res.status(400).send({ status: false, message: 'No paramateres passed. product unmodified', data: product })
         }
 
@@ -318,12 +333,13 @@ const updateProduct = async function(req, res) {
 
             const isTitleAlreadyUsed = await productModel.findOne({ title: title });
 
+            if (!updatedProductDetails.hasOwnProperty('title'))
+                updatedProductDetails['title'] = title
             if (isTitleAlreadyUsed) {
                 return res.status(400).send({ status: false, message: `${title} title is already used` })
             }
 
-            if (!updatedProductDetails.hasOwnProperty('title'))
-                updatedProductDetails['title'] = title
+            
         }
 
         if (validator.isValid(description)) {
@@ -408,14 +424,12 @@ const updateProduct = async function(req, res) {
                 updatedProductDetails['installments'] = installments
         }
 
-        const updatedProduct = await productModel.findOneAndUpdate({ _id: productId }, updatedProductDetails, { new: true })
+        const updatedProduct = await productModel.findOneAndUpdate({ _id: productId }, updatedProductDetails, { new: true }).select({updatedProductDetails:0,__v:0})
 
-        return res.status(200).send({ status: true, message: 'Successfully updated product details.', data: updatedProduct });
+         res.status(200).send({ status: true, message: 'Successfully updated product details.', data: updatedProduct });
     } catch (err) {
-        return res.status(500).send({
-            status: false,
-            message: "Error is : " + err
-        })
+        console.log(err)
+         res.status(500).send({status: false,message: "Error is : " + err })
     }
 }
 
@@ -445,10 +459,7 @@ const deleteProduct = async function(req, res) {
 
 
     } catch (err) {
-        return res.status(500).send({
-            status: false,
-            message: "Error is : " + err
-        })
+        return res.status(500).send({status: false,message: "Error is : " + err})
     }
 }
 
