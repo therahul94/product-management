@@ -3,8 +3,8 @@ const router = express.Router();
 const mid=require("../middleware/auth")
 const { createUser, login ,getUserDetails,updatedUserProfile} = require("../controllers/userController");
 const {productCreation,getAllProducts,getProductsById,updateProduct,deleteProduct}= require("../controllers/productController");
-const { route } = require("express/lib/application");
-const {createCart,updateCart}=require("../controllers/cartController")
+
+const {createCart,updateCart,getCart,deleteCart}=require("../controllers/cartController")
 
 //User Api's
 router.post("/register", createUser);
@@ -22,6 +22,8 @@ router.delete("/products/:productId",deleteProduct)
 // Cart API's
 router.post("/users/:userId/cart",createCart)
 router.put("/users/:userId/cart",updateCart)
+router.get("/users/:userId/cart",getCart)
+router.delete("/users/:userId/cart",deleteCart)
 
 
 module.exports = router;
