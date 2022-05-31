@@ -20,10 +20,10 @@ router.put("/products/:productId",updateProduct)
 router.delete("/products/:productId",deleteProduct)
 
 // Cart API's
-router.post("/users/:userId/cart",createCart)
-router.put("/users/:userId/cart",updateCart)
-router.get("/users/:userId/cart",getCart)
-router.delete("/users/:userId/cart",deleteCart)
+router.post("/users/:userId/cart",mid.authentication,mid.authorization,createCart)
+router.put("/users/:userId/cart",mid.authentication,mid.authorization,updateCart)
+router.get("/users/:userId/cart",mid.authentication,mid.authorization,getCart)
+router.delete("/users/:userId/cart",mid.authentication,mid.authorization,deleteCart)
 
 
 module.exports = router;

@@ -23,11 +23,11 @@ const cartSchema= new mongoose.Schema({
     }
     }],
     totalPrice: {type: Number, required:true},
-    totalItems: {type: Number, required:true},
-    isDeleted: {
-        type:Boolean,
-        default:false
-    }
+    totalItems: {type: Number, required:true}
+    // isDeleted: {
+    //     type:Boolean,
+    //     default:false
+    // }
    
 
 },{timestamps:true})

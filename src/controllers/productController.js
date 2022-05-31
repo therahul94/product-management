@@ -229,12 +229,7 @@ const getAllProducts = async function (req, res) {
           //setting price for ranging the product's price to fetch them.
           if (priceGreaterThan) {
             if (isNaN(Number(priceGreaterThan))) {
-              return res
-                .status(400)
-                .send({
-                  status: false,
-                  message: `priceGreaterThan should be a valid number`,
-                });
+              return res.status(400).send({status: false,message: `priceGreaterThan should be a valid number`});
             }
             if (priceGreaterThan <= 0) {
               return res.status(400).send({status: false,message: `priceGreaterThan should be a valid number`});
@@ -404,9 +399,7 @@ const updateProduct = async function (req, res) {
         if (validator.isValid(currencyId)) {
           currencyId = currencyId.toUpperCase();
           if (!(currencyId == "INR")) {
-            return res
-              .status(400)
-              .send({ status: false, message: "currencyId should be a INR" });
+            return res.status(400).send({ status: false, message: "currencyId should be a INR" });
           }
 
           if (!updatedProductDetails.hasOwnProperty("currencyId"))
@@ -421,12 +414,7 @@ const updateProduct = async function (req, res) {
         if (validator.isValid(isFreeShipping)) {
           isFreeShipping = isFreeShipping.toLowerCase();
           if (!(isFreeShipping === "true" || isFreeShipping === "false")) {
-            return res
-              .status(400)
-              .send({
-                status: false,
-                message: "isFreeShipping should be a boolean value",
-              });
+            return res.status(400).send({status: false,message: "isFreeShipping should be a boolean value"});
           }
 
           if (!updatedProductDetails.hasOwnProperty("isFreeShipping"))
@@ -458,13 +446,7 @@ const updateProduct = async function (req, res) {
           if (
             !["S", "XS", "M", "X", "L", "XXL", "XL"].includes(sizesArray[i])
           ) {
-            return res
-              .status(400)
-              .send({
-                status: false,
-                message:
-                  "AvailableSizes should be among ['S','XS','M','X','L','XXL','XL']",
-              });
+            return res.status(400).send({status: false,message:"AvailableSizes should be among ['S','XS','M','X','L','XXL','XL']"});
           }
         }
         if (!updatedProductDetails.hasOwnProperty("availableSizes"))
@@ -477,21 +459,11 @@ const updateProduct = async function (req, res) {
       //verifying must be a valid no. & must be greater than 0.
       if (validator.isValid(installments)) {
         if (!!isNaN(Number(installments))) {
-          return res
-            .status(400)
-            .send({
-              status: false,
-              message: `installments should be a valid number`,
-            });
+          return res.status(400).send({status: false,message: `installments should be a valid number`});
         }
 
         if (installments % 1 != 0) {
-          return res
-            .status(400)
-            .send({
-              status: false,
-              message: "installments can only be a whole number",
-            });
+          return res.status(400).send({status: false,message: "installments can only be a whole number"});
         }
 
         if (!updatedProductDetails.hasOwnProperty("installments"))
@@ -499,19 +471,9 @@ const updateProduct = async function (req, res) {
       }
       console.log(updatedProductDetails);
 
-      const updatedProduct = await productModel
-        .findOneAndUpdate({ _id: productId }, updatedProductDetails, {
-          new: true,
-        })
-        .select({ updatedProductDetails: 0, __v: 0 });
+      const updatedProduct = await productModel.findOneAndUpdate({ _id: productId }, updatedProductDetails, {new: true}).select({ updatedProductDetails: 0, __v: 0 });
 
-      res
-        .status(200)
-        .send({
-          status: true,
-          message: "Successfully updated product details.",
-          data: updatedProduct,
-        });
+      res.status(200).send({status: true,message: "Successfully updated product details.",data: updatedProduct });
     }
   } catch (err) {
     console.log(err);
@@ -527,49 +489,24 @@ const deleteProduct = async function (req, res) {
 
     //validation starts
     if (!mongoose.isValidObjectId(productId)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: `${productId} is not a valid product id`,
-        });
+      return res.status(400).send({status: false,message: `${productId} is not a valid product id`});
     }
     //vaidation ends.
 
     const product = await productModel.findOne({ _id: productId });
 
     if (!product) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: `Product doesn't exists by ${productId}`,
-        });
+      return res.status(400).send({status: false,message: `Product doesn't exists by ${productId}`});
     }
     if (product.isDeleted == false) {
-      await productModel.findOneAndUpdate(
-        { _id: productId },
-        { $set: { isDeleted: true, deletedAt: new Date() } }
-      );
+      await productModel.findOneAndUpdate({ _id: productId },{ $set: { isDeleted: true, deletedAt: new Date() }});
 
-      return res
-        .status(200)
-        .send({ status: true, message: `Product deleted successfully.` });
+      return res.status(200).send({ status: true, message: `Product deleted successfully.` });
     }
-    return res
-      .status(400)
-      .send({ status: true, message: `Product has been already deleted.` });
+    return res.status(400).send({ status: true, message: `Product has been already deleted.` });
   } catch (err) {
-    return res
-      .status(500)
-      .send({ status: false, message: "Error is : " + err });
+    return res.status(500).send({ status: false, message: "Error is : " + err });
   }
 };
 
-module.exports = {
-  productCreation,
-  getAllProducts,
-  getProductsById,
-  updateProduct,
-  deleteProduct,
-};
+module.exports = {productCreation,getAllProducts,getProductsById,updateProduct,deleteProduct};
