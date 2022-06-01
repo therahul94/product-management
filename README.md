@@ -484,10 +484,10 @@ email: xhyz@gmail.com
 password: Asbkjf23@%4
 
 <<<<<<< HEAD
-=======
+<!-- =======
 doubt:
 line 185-186:      
 What is this?
   filterQuery['title']['$regex'] = name
   filterQuery['title']['$options'] = 'i'
->>>>>>> 34c95c906ebacba1e9109d2eb708c3fd61bff448
+>>>>>>> 34c95c906ebacba1e9109d2eb708c3fd61bff448 -->
