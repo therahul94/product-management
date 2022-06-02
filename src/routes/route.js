@@ -5,7 +5,7 @@ const { createUser, login ,getUserDetails,updatedUserProfile} = require("../cont
 const {productCreation,getAllProducts,getProductsById,updateProduct,deleteProduct}= require("../controllers/productController");
 
 const {createCart,updateCart,getCart,deleteCart}=require("../controllers/cartController")
-const {createOrder} = require('../controllers/orderController') 
+const {createOrder,updateOrder} = require('../controllers/orderController') 
 
 //User Api's
 router.post("/register", createUser);
@@ -27,6 +27,7 @@ router.get("/users/:userId/cart",mid.authentication,mid.authorization,getCart)
 router.delete("/users/:userId/cart",mid.authentication,mid.authorization,deleteCart)
 //  4th phase
 router.post("/users/:userId/orders",createOrder)
+router.put("/users/:userId/orders",updateOrder)
 
 
 module.exports = router;
