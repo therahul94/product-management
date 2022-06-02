@@ -1,15 +1,13 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
-const validate = require("../validators/validation");
+// const validate = require("../validators/validation");
 const mongoose=require("mongoose")
 
 const authentication = (req, res, next) => {
   try {
     let bearerHeader = req.headers.authorization;
     if (typeof bearerHeader == "undefined")
-      return res
-        .status(400)
-        .send({ status: false, message: "Token is missing" });
+      return res.status(400).send({ status: false, message: "Token is missing" });
 
     let bearerToken = bearerHeader.split(" ");
     let token = bearerToken[1];

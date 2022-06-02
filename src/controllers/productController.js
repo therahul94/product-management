@@ -3,7 +3,6 @@ const config = require("../utils/awsConfig");
 const productModel = require("../models/productModel");
 const currencySymbol = require("currency-symbol-map");
 const { default: mongoose } = require("mongoose");
-const { validate, find } = require("../models/productModel");
 
 //creating product by validating all details.
 const productCreation = async function (req, res) {
@@ -149,24 +148,26 @@ const productCreation = async function (req, res) {
 
     console.log(availableSizes.length);
     //validating sizes to take multiple sizes at a single attempt.
-    if (availableSizes) {
-      if (availableSizes.length == 0) {
-        return res.status(400).send({status: false,message: "AvailableSizes should be required"});
-      }
-      let sizesArray = availableSizes.split(",").map((x) => x.trim());
-      // let sizesArray = JSON.parse(sizesArray)
+    // if (availableSizes) {
+    //     // availableSizes = JSON.parse(JSON.stringify(availableSizes));
+    //     // console.log(availableSizes)
+    //   if (availableSizes.length == 0) {
+    //     return res.status(400).send({status: false,message: "AvailableSizes should be required"});
+    //   }
+    // //   let sizesArray = availableSizes.split(",").map((x) => x.trim());
+    //   // let sizesArray = JSON.parse(sizesArray)
 
-      for (let i = 0; i < sizesArray.length; i++) {
-        if (!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(sizesArray[i])) {
-          return res.status(400).send({status: false,message:"AvailableSizes should be among ['S','XS','M','X','L','XXL','XL']"});
-        }
-      }
+    //   for (let i = 0; i < sizesArray.length; i++) {
+    //     if (!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(sizesArray[i])) {
+    //       return res.status(400).send({status: false,message:"AvailableSizes should be among ['S','XS','M','X','L','XXL','XL']"});
+    //     }
+    //   }
 
-      //using array.isArray function to check the value is array or not.
-      if (Array.isArray(sizesArray)) {
-        newProductData["availableSizes"] = [...new Set(sizesArray)];
-      }
-    }
+    //   //using array.isArray function to check the value is array or not.
+    //   if (Array.isArray(sizesArray)) {
+    //     newProductData["availableSizes"] = [...new Set(sizesArray)];
+    //   }
+    // }
 
     const saveProductDetails = await productModel.create(newProductData);
     res.status(201).send({ status: true, message: "Successfully saved product details",data: saveProductDetails});
@@ -176,7 +177,6 @@ const productCreation = async function (req, res) {
     res.status(500).send({ status: false, message: err.message });
   }
 };
-
 //fetch all products.
 const getAllProducts = async function (req, res) {
   try {
@@ -356,6 +356,14 @@ const updateProduct = async function (req, res) {
 
     //Declaring an empty object then using hasOwnProperty to match the keys and setting the appropriate values.
     const updatedProductDetails = {};
+    if(currencyFormat){
+      if(currencyFormat !="₹"){
+        return res.status(400).send({ status: false, message: `${currencyFormat} is not valid specific indian rupees` });
+
+      }
+      updatedProductDetails.currencyFormat=currencyFormat
+    }
+
 
     if (title) {
       // validate the title
@@ -370,13 +378,14 @@ const updateProduct = async function (req, res) {
         if (isTitleAlreadyUsed) {
           return res.status(400).send({ status: false, message: `${title} title is already used` });
         }
-      }
+      }}
 
       if (description) {
         if (validator.isValid(description)) {
           if (!updatedProductDetails.hasOwnProperty("description"))
             updatedProductDetails["description"] = description;
         }
+        console.log("hii449")
       }
 
       //verifying price is number & must be greater than 0.
@@ -408,7 +417,7 @@ const updateProduct = async function (req, res) {
           currencyFormat = currencySymbol("INR");
         }
       }
-
+     
       //shipping must be true/false.
       if (isFreeShipping) {
         if (validator.isValid(isFreeShipping)) {
@@ -462,6 +471,9 @@ const updateProduct = async function (req, res) {
           return res.status(400).send({status: false,message: `installments should be a valid number`});
         }
 
+        if(installments<0){
+          return res.status(400).send({status:false, msg:"installments can only be a whole number"})
+        }
         if (installments % 1 != 0) {
           return res.status(400).send({status: false,message: "installments can only be a whole number"});
         }
@@ -474,7 +486,7 @@ const updateProduct = async function (req, res) {
       const updatedProduct = await productModel.findOneAndUpdate({ _id: productId }, updatedProductDetails, {new: true}).select({ updatedProductDetails: 0, __v: 0 });
 
       res.status(200).send({status: true,message: "Successfully updated product details.",data: updatedProduct });
-    }
+    
   } catch (err) {
     console.log(err);
     res.status(500).send({ status: false, message: "Error is : " + err });

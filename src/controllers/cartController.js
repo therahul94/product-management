@@ -129,6 +129,8 @@ const createCart = async (req, res) => {
              return res.status(400).send({status:false, msg:"Remove product is requried"})
          }
 
+        //  if(removeProduct )
+
          if(!mongoose.isValidObjectId(productId)){
              return res.status(400).send({status:false, msg:"Product Id is invalid"})
          }
@@ -140,6 +142,9 @@ const createCart = async (req, res) => {
          if(!mongoose.isValidObjectId(cartId)){
              return res.status(400).send({status:false, msg:"Cart Id is invalid"})
          }
+         if (!(removeProduct == 0 || removeProduct == 1)) {
+          return res.status(400).send({ status: false, msg: "removeProduct value should be either 0 or 1" })
+        }
 
          const isPresentCartId=await cartModel.findOne({_id:cartId, userId:userId})
          if(!isPresentCartId){

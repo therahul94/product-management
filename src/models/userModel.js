@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     lname: {type: String, required: true, trim: true},
     email: {type: String, required: true, unique: true, trim: true},
     profileImage: {type: String, required: true, trim: true}, // s3 link
-    phone: {type: Number, required: true, unique: true}, // , valid Indian mobile number 
+    phone: {type: String, required: true, unique: true}, // , valid Indian mobile number 
     password: {type: String, required: true, trim: true}, // encrypted password
     address: {
         type: Object,
@@ -24,4 +24,4 @@ const userSchema = new mongoose.Schema({
 
 }, {timestamps: true});
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);// users
