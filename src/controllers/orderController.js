@@ -45,6 +45,10 @@ const createOrder = async function (req, res) {
 
         let order = getCart.toJSON();
         order['totalQuantity'] = totalQuantity;
+        
+         if(status == "cancaled"){
+           order['isDeleted'] = true
+        }
 
         const orderDetails = await orderModel.create(order);
         return res.status(201).send({ status: true, message: 'Success', Data: orderDetails });
