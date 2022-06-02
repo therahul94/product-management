@@ -188,6 +188,8 @@ const createUser = async function (req, res) {
   }
 };
 
+// =====================================Login===========================================
+
 const login = async function (req, res) {
   try {
     let data = req.body;
@@ -218,7 +220,7 @@ const login = async function (req, res) {
       return res.status(400).send({ status: false, message: "Password is not correct" });
     }
 
-    let token = jwt.sign({ userId: checkValidUser._id }, "Product-Management", {expiresIn: "1d"});
+    let token = jwt.sign({ userId: checkValidUser._id }, "Product-Management", {expiresIn:"1d"});
 
     const userId = await userModel.findOne({ email: data.email }).select({ _id: 1 });
     res.status(200).send({status: true,msg: "User login successfull",data: { userId: userId._id, token: token }});
@@ -243,7 +245,7 @@ const getUserDetails = async function (req, res) {
   return res.status(200).send({ status: true, message: "user profile details", data: findUserId });
 };
 
-
+// ======================================================================================
 
 const updatedUserProfile = async (req, res) => {
   try {

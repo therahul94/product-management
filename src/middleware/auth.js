@@ -15,12 +15,13 @@ const authentication = (req, res, next) => {
     req.decodedToken = jwt.verify(token, "Product-Management", {
       ignoreExpiration: true,
     });
-    console.log(req.decodedToken)
+    console.log("token",req.decodedToken)
     // if (!req.decodedToken)
     //   return res.status(400).send({ status: false, msg: "Invalid token" });
 
     const tokenExpire = req.decodedToken.exp;
     if (tokenExpire * 1000 < Date.now())
+
       return res.status(400).send({ status: false, msg: "token Expires" });
     // req.decodedToken = decodedToken;
     console.log("hii")
