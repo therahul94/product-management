@@ -196,7 +196,7 @@ const getAllProducts = async function (req, res) {
       if (validator.isRequestBodyEmpty(queryParams)) {
         const { size, name, priceGreaterThan, priceLessThan, priceSort } = queryParams;
 
-        filterQuery["price"] = {};
+        // filterQuery["price"] = {};
 
         //validation starts.
         if (validator.isValid(size)) {
@@ -213,7 +213,7 @@ const getAllProducts = async function (req, res) {
         }
 
         //setting price for ranging the product's price to fetch them.
-        if (priceGreaterThan) {
+        // if (priceGreaterThan) {
           //using $regex to match the subString of the names of products & "i" for case insensitive.
           if (validator.isValid(name)) {
             console.log(name);
@@ -222,6 +222,7 @@ const getAllProducts = async function (req, res) {
             // filterQuery['title']['$regex'] = name
             // filterQuery['title']['$options'] = 'i'
           }
+          // console.log("hiiiiiii chal ")
 
           if (priceGreaterThan || priceLessThan) {
             filterQuery["price"] = {};
@@ -281,7 +282,7 @@ const getAllProducts = async function (req, res) {
           }
 
           res.status(200).send({ status: true, message: "Product list", data3: products });
-        }
+        // }
       }
     }
   } catch (error) {

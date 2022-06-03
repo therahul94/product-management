@@ -2,12 +2,8 @@ const userModel = require("../models/userModel");
 const validator = require("../validators/validation");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
-const config= require("../utils/awsConfig")
-
 const aws = require("aws-sdk");
 const { default: mongoose } = require("mongoose");
-const { compare } = require("bcrypt");
-const { request } = require("express");
 
 
 aws.config.update({

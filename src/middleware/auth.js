@@ -12,9 +12,7 @@ const authentication = (req, res, next) => {
     let bearerToken = bearerHeader.split(" ");
     let token = bearerToken[1];
     console.log(token)
-    req.decodedToken = jwt.verify(token, "Product-Management", {
-      ignoreExpiration: true,
-    });
+    req.decodedToken = jwt.verify(token, "Product-Management", {ignoreExpiration: true});
     console.log("token",req.decodedToken)
     // if (!req.decodedToken)
     //   return res.status(400).send({ status: false, msg: "Invalid token" });

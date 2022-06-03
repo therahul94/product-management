@@ -25,7 +25,8 @@ router.post("/users/:userId/cart",mid.authentication,mid.authorization,createCar
 router.put("/users/:userId/cart",mid.authentication,mid.authorization,updateCart)
 router.get("/users/:userId/cart",mid.authentication,mid.authorization,getCart)
 router.delete("/users/:userId/cart",mid.authentication,mid.authorization,deleteCart)
-//  4th phase
+
+//  4th phase(Order API's)
 router.post("/users/:userId/orders",mid.authentication,mid.authorization,createOrder)
 router.put("/users/:userId/orders",mid.authentication,mid.authorization,updateOrder)
 
