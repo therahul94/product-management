@@ -7,6 +7,9 @@ const {productCreation,getAllProducts,getProductsById,updateProduct,deleteProduc
 const {createCart,updateCart,getCart,deleteCart}=require("../controllers/cartController")
 const {createOrder,updateOrder} = require('../controllers/orderController') 
 
+// default 
+router.get('/', async (req, res)=> return res.send("WELCOME TO THE BACKEND, Just checking if the code is uploaded in aws correctly or not."));
+
 //User Api's
 router.post("/register", createUser);
 router.post("/login", login);
