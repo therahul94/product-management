@@ -9,7 +9,8 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(multer().any())
 
-mongoose.connect("mongodb+srv://Avi9984:edmXH1jaB63lQyo8@cluster0.qfc4n.mongodb.net/group25",{
+//mongodb+srv://Avi9984:edmXH1jaB63lQyo8@cluster0.qfc4n.mongodb.net/group25
+mongoose.connect("mongodb+srv://rahulkurmalkar05:urlshortner123@cluster0.cmwhc.mongodb.net/group25",{
     useNewUrlParser:true
 })
 .then(()=>console.log("Connected to MongoDB.."))
